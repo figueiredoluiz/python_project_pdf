@@ -28,13 +28,10 @@ class CustomPDF(FPDF):
         self.ln(10)
 
     def chapter_body(self, body: str, is_code: bool = False):
-        self.set_font(Config.FONT_FAMILY, Config.FONT_STYLE_NORMAL, Config.FONT_SIZE_SMALL)
         if is_code:
-            # Split the code into lines and write each line
-            lines = body.split('\n')
-            for line in lines:
-                self.cell(0, 5, line, 0, 1)
+            self.write_html(body)
         else:
+            self.set_font(Config.FONT_FAMILY, Config.FONT_STYLE_NORMAL, Config.FONT_SIZE_SMALL)
             self.multi_cell(0, 5, body)
         self.ln()
 

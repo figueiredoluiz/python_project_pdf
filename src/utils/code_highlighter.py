@@ -4,13 +4,15 @@ from pygments.formatters import HtmlFormatter
 from html import escape
 
 class CodeHighlighter:
-    """
-    Class for handling code highlighting.
-    """
     @staticmethod
     def highlight_code(content: str, file_extension: str) -> str:
         """
         Highlight the given code content based on the file extension.
+        Args:
+            content (str): The code content to highlight.
+            file_extension (str): The file extension to determine the language.
+        Returns:
+            str: HTML string of the highlighted code.
         """
         try:
             lexer = get_lexer_by_name(file_extension)
@@ -20,9 +22,5 @@ class CodeHighlighter:
         formatter = HtmlFormatter(style='colorful', noclasses=True)
         highlighted_code = highlight(escape(content), lexer, formatter)
         
-        # Convert HTML to plain text with ANSI escape codes
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(highlighted_code, 'html.parser')
-        plain_text = soup.get_text()
-        
-        return plain_text
+        # Wrap the highlighted code in a div
+        return f'<div class="highlighted-code">{highlighted_code}</div>'
