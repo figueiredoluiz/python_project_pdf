@@ -33,7 +33,11 @@ jobs:
         git config --local user.name "GitHub Action"
         git add src/version.py
         git commit -m "Update version to ${GITHUB_REF#refs/tags/v}"
-        git push origin HEAD:main  # Replace 'main' with your default branch name if different
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PAT_GITHUB_ACTION }}
+        branch: ${{ github.ref }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
