@@ -3,51 +3,53 @@ name: Create Release
 on:
   push:
     tags:
-      - "v*" # This workflow will be triggered on tags starting with 'v'
+      - 'v*' # This workflow will be triggered on tags starting with 'v'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-      - name: Update version.py
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "__version__ = \"$VERSION\"" > src/version.py
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
-      - name: Build with PyInstaller
-        run: pyinstaller project-pdf.spec
-      - name: Commit version update
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add src/version.py
-          git commit -m "Update version to ${GITHUB_REF#refs/tags/v}"
-          git push
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/project-pdf
-          asset_name: project-pdf
-          asset_content_type: application/octet-stream
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch all history for all tags and branches
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Update version.py
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "__version__ = \"$VERSION\"" > src/version.py
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    - name: Build with PyInstaller
+      run: pyinstaller project-pdf.spec
+    - name: Commit version update
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add src/version.py
+        git commit -m "Update version to ${GITHUB_REF#refs/tags/v}"
+        git push origin HEAD:main  # Replace 'main' with your default branch name if different
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/project-pdf
+        asset_name: project-pdf
+        asset_content_type: application/octet-stream
