@@ -24,7 +24,7 @@ def main():
     """
     if '--version' in sys.argv:
         print_version()
-        sys.exit(0)
+        return
 
     if '--debug' in sys.argv:
         Config.DEBUG = True
@@ -35,16 +35,20 @@ def main():
 
     if len(sys.argv) != 3:
         print_usage()
-        sys.exit(1)
+        return  # Exit after printing usage
 
     directory_path = sys.argv[1]
     output_file = sys.argv[2]
 
     try:
         PDFGenerator.create_pdf_from_directory(directory_path, output_file)
+        print(f"PDF created successfully: {output_file}")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        sys.exit(1)
+        if Config.DEBUG:
+            print("Traceback:")
+            import traceback
+            traceback.print_exc()
 
 if __name__ == "__main__":
     main()
