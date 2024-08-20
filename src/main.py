@@ -1,9 +1,12 @@
 import sys
 import os
+import logging
+from src.config import Config
+from src.utils.pdf_generator import PDFGenerator
 
 def print_usage():
-    print("Usage: project-pdf [--version] <directory_path> <output_file>")
-    print("Example: project-pdf /path/to/project output.pdf")
+    print("Usage: project-pdf [--version] [--debug] <directory_path> <output_file>")
+    print("Example: project-pdf --debug /path/to/project output.pdf")
 
 def print_version():
     try:
@@ -19,9 +22,16 @@ def main():
     """
     Main function to run the script.
     """
-    if len(sys.argv) == 2 and sys.argv[1] == '--version':
+    if '--version' in sys.argv:
         print_version()
         sys.exit(0)
+
+    if '--debug' in sys.argv:
+        Config.DEBUG = True
+        sys.argv.remove('--debug')
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.ERROR)
 
     if len(sys.argv) != 3:
         print_usage()
@@ -30,32 +40,8 @@ def main():
     directory_path = sys.argv[1]
     output_file = sys.argv[2]
 
-    # Try different import methods
-    try:
-        # First, try importing normally (this works when running the script directly)
-        from src.utils.pdf_generator import PDFGenerator
-    except ImportError:
-        try:
-            # If that fails, try adding the current directory to the path
-            # (this can work when running the compiled executable)
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            sys.path.insert(0, current_dir)
-            from src.utils.pdf_generator import PDFGenerator
-        except ImportError:
-            # If that also fails, try importing without the 'src' prefix
-            # (this can work if PyInstaller flattened the directory structure)
-            try:
-                from utils.pdf_generator import PDFGenerator
-            except ImportError:
-                print("Error: Unable to import required modules.")
-                print("This might be due to running the compiled executable.")
-                print("Please make sure you're running the script from the correct directory.")
-                print_usage()
-                sys.exit(1)
-
     try:
         PDFGenerator.create_pdf_from_directory(directory_path, output_file)
-        print(f"PDF created successfully: {output_file}")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         sys.exit(1)
