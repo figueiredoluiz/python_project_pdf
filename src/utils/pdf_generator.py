@@ -1,7 +1,7 @@
 import os
 import traceback
 from io import BytesIO
-import PyPDF2
+import pypdf
 from fpdf import FPDF, XPos, YPos
 from ..config import Config
 from .custom_pdf import CustomPDF
@@ -42,11 +42,11 @@ class PDFGenerator:
                 logger.info("Creating table of contents")
             pdf.add_page()
             pdf.set_font(Config.DEFAULT_FONT, 'B', Config.FONT_SIZE_HEADING)
-            pdf.cell(0, 10, 'Table of Contents', 0, 1, 'C')
+            pdf.cell(0, 10, 'Table of Contents', 0, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
             pdf.ln(5)
 
             pdf.set_font(Config.DEFAULT_FONT, '', Config.FONT_SIZE_SUBHEADING)
-            pdf.cell(0, 10, 'File Structure', 0, 1, 'L')
+            pdf.cell(0, 10, 'File Structure', 0, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='L')
 
             for file_path in file_structure:
                 link = pdf.add_link()
