@@ -7,7 +7,7 @@ class TestCustomPDF(unittest.TestCase):
         pdf = CustomPDF('Test Title')
         pdf.add_page()
         pdf.chapter_title('Chapter 1')
-        pdf.chapter_body('This is a test body.', is_code=False)
+        pdf.chapter_body('This is a test body.')
         self.assertEqual(pdf.page_no(), 1)
 
 if __name__ == '__main__':
