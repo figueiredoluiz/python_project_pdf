@@ -33,7 +33,7 @@ class CustomPDF(FPDF):
                 try:
                     if Config.DEBUG:
                         logger.debug(f"Initializing font: {font_name} (style: {style})")
-                    self.add_font(font_name, style, font_file, uni=True)
+                    self.add_font(font_name, style, font_file)
                     if Config.DEBUG:
                         logger.debug(f"Successfully initialized font: {font_name} (style: {style})")
                 except Exception as e:
@@ -46,12 +46,12 @@ class CustomPDF(FPDF):
     def footer(self):
         self.set_y(-15)
         self.set_font(Config.DEFAULT_FONT, '', Config.FONT_SIZE_SMALL)
-        self.cell(0, 10, f'Page {self.page_no()} of {{nb}}', 0, 0, 'C')
+        self.cell(0, 10, f'Page {self.page_no()} of {{nb}}', 0, new_x=XPos.RIGHT, new_y=YPos.TOP, align='C')
 
     def chapter_title(self, title: str):
         self.set_font(Config.DEFAULT_FONT, Config.TITLE_FONT_STYLE, Config.TITLE_FONT_SIZE)
         self.set_fill_color(*Config.TITLE_BACKGROUND_COLOR)
-        self.cell(0, 10, title, 0, 1, 'L', True)
+        self.cell(0, 10, title, 0, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='L', fill=True)
         self.ln(5)
 
     def chapter_body(self, body: str):
@@ -62,7 +62,7 @@ class CustomPDF(FPDF):
     def add_index_entry(self, text: str, link: int):
         self.set_font(Config.DEFAULT_FONT, '', Config.FONT_SIZE_NORMAL)
         self.set_text_color(0, 0, 255)
-        self.cell(10, 5, chr(149), 0, 0)
+        self.cell(10, 5, chr(149), 0, new_x=XPos.RIGHT, new_y=YPos.TOP)
         self.cell(0, 5, text, link=link)
         self.set_text_color(0)
         self.ln()
