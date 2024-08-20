@@ -18,9 +18,10 @@ class CodeHighlighter:
             lexer = get_lexer_by_name(file_extension)
         except ValueError:
             lexer = guess_lexer(content)
-        
-        formatter = HtmlFormatter(style='colorful', noclasses=True)
+
+        # Specify a Unicode-friendly font in the CSS
+        formatter = HtmlFormatter(style='colorful', noclasses=True, cssclass="code", prestyles="font-family: 'DejaVu Sans', monospace;")
         highlighted_code = highlight(escape(content), lexer, formatter)
-        
+
         # Wrap the highlighted code in a div
         return f'<div class="highlighted-code">{highlighted_code}</div>'
